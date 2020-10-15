@@ -9,21 +9,30 @@ state = {
 
   componentDidMount() {
       // Call our fetch function below once the component mounts
-    this.callBackendAPI()
+    let getUrl = window.location;
+    let baseUrl = getUrl.protocol + "//" + getUrl.host + "/";
+    let search = window.location.search;
+    let parameters = new URLSearchParams(search);
+    fetch('http://localhost:3405/twitter?query=' + parameters.get('query') + '&count=' + parameters.get('count')) // Hardcoded address
+    .then(res => res.json())
+    .then(res => this.setState({tweets: res.array, totalScore: res.totalScore, sentiment: res.sentiment}))
+
+
+    /* this.callBackendAPI()
       .then(res => this.setState({ tweets: res.array,totalScore: res.totalScore , sentiment: res.sentiment}))
         
-      .catch(err => console.log(err));
+      .catch(err => console.log(err)); */
   }
     // Fetches our GET route from the Express server. (Note the route we are fetching matches the GET route from server.js
-  callBackendAPI = async () => {
-    const response = await fetch('/twitter');
+  /* callBackendAPI = async () => {
+    
     const body = await response.json();
 
     if (response.status !== 200) {
       throw Error(body.message) 
     }
     return body;
-  };
+  }; */
 
   render() {
     return (
