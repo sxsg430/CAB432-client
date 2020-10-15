@@ -4,6 +4,7 @@ import { BrowserRouter, Route } from 'react-router-dom';
 import './index.css';
 import App from './App';
 import { Sentiment } from './components/sentiment';
+import { Home } from './components/home';
 import * as serviceWorker from './serviceWorker';
 
 const rootElement = document.getElementById('root');
@@ -11,6 +12,7 @@ const rootElement = document.getElementById('root');
 
 ReactDOM.render(
     <BrowserRouter>
+      <Route exact path='/' component={Home} />
       <Route path='/sentiment' component={Sentiment} />
     </BrowserRouter>,
     rootElement);
