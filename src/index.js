@@ -6,6 +6,7 @@ import App from './App';
 import { Sentiment } from './components/sentiment';
 import { Home } from './components/home';
 import * as serviceWorker from './serviceWorker';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const rootElement = document.getElementById('root');
 
