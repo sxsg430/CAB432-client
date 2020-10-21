@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Container, Row, Col} from 'reactstrap';
+import {Container, Row, Col, Navbar, NavbarBrand, Nav, NavItem, NavLink} from 'reactstrap';
 import Tweet from './ui_elements/tweet';
 
 export class Sentiment extends Component {
@@ -23,6 +23,14 @@ state = {
   render() {
     return (
       <div className="App">
+        <Navbar color="dark" dark expand="md">
+                    <NavbarBrand href="/">Twitter Search</NavbarBrand>
+                    <Nav className="mr-auto" navbar>
+                        <NavItem>
+                            <NavLink href="/">Search</NavLink>
+                        </NavItem>
+                    </Nav>
+                </Navbar>
         <Container fluid>
           <Row>
             <Col xs="5" sm="5">

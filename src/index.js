@@ -5,6 +5,7 @@ import './index.css';
 import App from './App';
 import { Sentiment } from './components/sentiment';
 import { Home } from './components/home';
+import {Historical} from './components/historical'
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -15,6 +16,7 @@ ReactDOM.render(
     <BrowserRouter>
       <Route exact path='/' component={Home} />
       <Route path='/sentiment' component={Sentiment} />
+      <Route path='/historical' component={Historical} />
     </BrowserRouter>,
     rootElement);
 
