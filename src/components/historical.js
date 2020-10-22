@@ -8,8 +8,8 @@ import WordCloud from 'react-d3-cloud';
 export class Historical extends Component {
 state = {
     tweets: [],
-    keys: [],
     tweetbody: [],
+    scores: [],
     totalScore: 0,
     sentiment: ""
   };
@@ -68,11 +68,6 @@ state = {
   }
 
   async fetchTweets() {
-    /*
-    {this.state.keys.map((tweet) => (
-                      <TweetHist tweet={tweet} />
-                    ))}
-                    */
     let getUrl = window.location;
     let baseUrl = getUrl.protocol + "//" + getUrl.host + "/";
     let search = window.location.search;
@@ -80,10 +75,11 @@ state = {
     const mkeys = await fetch('http://localhost:3405/historical?query=' + parameters.get('query')); // Hardcoded address
     const key2 = await mkeys.json();
     let tweetTXT = [];
-    let tweetLST = [];
     let tweetSTORE = [];
+    let tweetSCORE = [];
     key2.forEach(async (element) => {
       tweetSTORE.push(JSON.parse(element));
+      tweetSCORE.push(JSON.parse(element).score);
       const twString = JSON.parse(element).text.split(" ");
       twString.forEach(element2 => {
         tweetTXT.push(element2);
@@ -97,6 +93,10 @@ state = {
       let localJS = {text: key, value: twFinal[key]};
       finalTWT.push(localJS);
     }
-    this.setState({tweets: tweetSTORE, tweetbody: finalTWT});
+    
+    const sentimentSUM = tweetSCORE.reduce((a, b) => a + b, 0);
+    const sentimentAVG = (sentimentSUM / tweetSCORE.length) || 0;
+
+    this.setState({tweets: tweetSTORE, tweetbody: finalTWT, scores: tweetSCORE, totalScore: sentimentAVG});
   }
 }
