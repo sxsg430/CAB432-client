@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^7.2.1",
     "bootstrap": "^4.5.3",
     "collect.js": "^4.28.4",
+    "history": "^5.0.0",
     "react": "^16.14.0",
     "react-d3-cloud": "^0.7.0",
     "react-dom": "^16.14.0",
