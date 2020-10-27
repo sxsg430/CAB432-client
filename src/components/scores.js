@@ -74,14 +74,30 @@ state = {
     const twColl = collect(roundedvals);
     const twDup = twColl.countBy();
     const twFinal = twDup.all();
-    const sorted = json.sort(twFinal);
+    const sorted = json.sort(twFinal, false);
+    const sorted2 = json.sort(twFinal);
+    var barPositive = [];
+    var barNegative = [];
     var barLabels = [];
     var barData = [];
-    for (const key in sorted) {
-      barLabels.push(key);
-      barData.push(twFinal[key])
+    for (const key in sorted2) {
+      if (parseFloat(key) >= 0) {
+        barPositive.push([key, twFinal[key]])
     }
-    // TODO: Fix ordering of positive and negative numbers
+  }
+    for (const key in sorted) {
+      if (parseFloat(key) < 0) {
+        barNegative.push([key, twFinal[key]])
+    }
+  }
+    barNegative.forEach(async (element) => {
+      barLabels.push(element[0]);
+      barData.push(element[1])
+    })
+    barPositive.forEach(async (element) => {
+      barLabels.push(element[0]);
+      barData.push(element[1])
+    })
     const barMeta = {
       labels: barLabels,
       datasets: [
