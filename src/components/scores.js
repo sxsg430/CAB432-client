@@ -2,14 +2,16 @@ import React, { Component } from 'react';
 import {Container, Row, Col, Navbar, NavbarBrand, Nav, NavItem, NavLink} from 'reactstrap';
 import Tweet from './ui_elements/tweet';
 import collect from 'collect.js';
+import json from 'json-keys-sort';
 import { render } from 'react-dom';
 import WordCloud from 'react-d3-cloud';
+import Chart from 'chart.js';
+import { Bar } from '@reactchartjs/react-chart.js';
 
 export class Scores extends Component {
 state = {
-    tweets: [],
-    tweetbody: [],
     scores: [],
+    roundedscore: [],
     totalScore: 0,
     sentiment: ""
   };
@@ -17,8 +19,6 @@ state = {
   componentDidMount() {
       // Call our fetch function below once the component mounts
       this.fetchTweets();
-      //this.setState({keys: result});
-      //console.log(this.state.keys);
     
   }
 
@@ -46,14 +46,11 @@ state = {
                 <Row>
                   <Col xs="5" sm="5">
                   <h2> Average Score: { this.state.scores[0]}</h2>
-                  <h3> Total Tweets Fetched: { this.state.tweets.length}</h3>
-                  <h4>Word Cloud</h4>
-                 
+                  <h3> Total Tweets Fetched: { this.state.scores.length}</h3>
+                  <h4>Sentiment Graph</h4>
+                  <Bar data={this.state.roundedscore} />
                   </Col>
                   <Col xs="7" sm="7">
-                  {this.state.tweets.map((tweet) => (
-                      <Tweet tweet={tweet} />
-                    ))}
                   </Col>
                 </Row>
               </Container>
@@ -70,31 +67,33 @@ state = {
     let parameters = new URLSearchParams(search);
     const mkeys = await fetch('http://localhost:3405/scores?query=' + parameters.get('query')); // Hardcoded address
     const key2 = await mkeys.json();
-    console.log(key2);
-    this.setState({scores: key2});
-    /*let tweetTXT = [];
-    let tweetSTORE = [];
-    let tweetSCORE = [];
+    var roundedvals = [];
     key2.forEach(async (element) => {
-      tweetSTORE.push(JSON.parse(element));
-      tweetSCORE.push(JSON.parse(element).score);
-      const twString = JSON.parse(element).text.split(" ");
-      twString.forEach(element2 => {
-        tweetTXT.push(element2);
-      })
+      roundedvals.push(parseFloat(element).toFixed(2));
     })
-    const twColl = collect(tweetTXT);
+    const twColl = collect(roundedvals);
     const twDup = twColl.countBy();
-    let finalTWT = [];
     const twFinal = twDup.all();
-    for (const key in twFinal) {
-      let localJS = {text: key, value: twFinal[key]};
-      finalTWT.push(localJS);
+    const sorted = json.sort(twFinal);
+    var barLabels = [];
+    var barData = [];
+    for (const key in sorted) {
+      barLabels.push(key);
+      barData.push(twFinal[key])
     }
-    
-    const sentimentSUM = tweetSCORE.reduce((a, b) => a + b, 0);
-    const sentimentAVG = (sentimentSUM / tweetSCORE.length) || 0;
+    // TODO: Fix ordering of positive and negative numbers
+    const barMeta = {
+      labels: barLabels,
+      datasets: [
+        {
+          label: "Sentiment Scores",
+          data: barData,
+          backgroundColor: '#660000'
+        }
+      ]
+    }
 
-    this.setState({tweets: tweetSTORE, tweetbody: finalTWT, scores: tweetSCORE, totalScore: sentimentAVG});*/
+
+    this.setState({scores: key2, roundedscore: barMeta});
   }
 }
