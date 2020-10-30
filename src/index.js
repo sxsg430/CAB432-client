@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Route } from 'react-router-dom';
 import './index.css';
-import App from './App';
 import { Sentiment } from './components/sentiment';
 import { Home } from './components/home';
 import {Historical} from './components/historical'

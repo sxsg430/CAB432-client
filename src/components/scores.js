@@ -9,6 +9,7 @@ state = {
     scores: [],
     roundedscore: [],
     totalScore: 0,
+    scoreAVG: 0,
     sentiment: ""
   };
 
@@ -43,7 +44,7 @@ state = {
               <Container fluid>
                 <Row>
                   <Col xs="5" sm="5">
-                  <h2> Average Score: { this.state.scores[0]}</h2>
+                  <h2> Average Score: { this.state.scoreAVG}</h2>
                   <h3> Total Tweets Fetched: { this.state.scores.length}</h3>
                   <h4>Sentiment Graph</h4>
                   <Bar data={this.state.roundedscore} />
@@ -66,8 +67,10 @@ state = {
     // Convert result to JSON for later use.
     const key2 = await mkeys.json();
     var roundedvals = [];
+    var totals = 0;
     key2.forEach(async (element) => {
       // For each sentiment score, convert the string to float and round to two places.
+      totals += parseFloat(element)
       roundedvals.push(parseFloat(element).toFixed(2));
     })
     const twColl = collect(roundedvals);
@@ -116,8 +119,9 @@ state = {
         }
       ]
     }
+    var finalAVG = totals / key2.length;
 
     // Push variables to state.
-    this.setState({scores: key2, roundedscore: barMeta});
+    this.setState({scores: key2, roundedscore: barMeta, scoreAVG: finalAVG});
   }
 }
