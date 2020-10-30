@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Card, CardSubtitle, CardText, CardBody, CardTitle} from 'reactstrap';
+import {Card, CardText, CardBody, CardTitle} from 'reactstrap';
 
 export class Tweet extends Component {
     constructor(props) {

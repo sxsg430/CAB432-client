@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {Container, Row, Col, Navbar, NavbarBrand, Nav, NavItem, NavLink, Spinner} from 'reactstrap';
 import Tweet from './ui_elements/tweet';
 import collect from 'collect.js';
-import { render } from 'react-dom';
 import WordCloud from 'react-d3-cloud';
 import json from 'json-keys-sort';
 import { Bar } from '@reactchartjs/react-chart.js';

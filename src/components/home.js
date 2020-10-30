@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import { withRouter } from "react-router-dom";
-import { createBrowserHistory } from 'history';
 import {Navbar, NavbarBrand, Nav, NavItem, NavLink, Input, Container, Row, Col, ButtonGroup, Button} from 'reactstrap';
 export class Home extends Component {
     constructor(props) {

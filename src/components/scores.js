@@ -1,11 +1,7 @@
 import React, { Component } from 'react';
 import {Container, Row, Col, Navbar, NavbarBrand, Nav, NavItem, NavLink, Spinner} from 'reactstrap';
-import Tweet from './ui_elements/tweet';
 import collect from 'collect.js';
 import json from 'json-keys-sort';
-import { render } from 'react-dom';
-import WordCloud from 'react-d3-cloud';
-import Chart from 'chart.js';
 import { Bar } from '@reactchartjs/react-chart.js';
 
 export class Scores extends Component {
@@ -23,8 +19,6 @@ state = {
   }
 
   render() {
-    const fontSizeMapper = word => Math.log2(word.value) * 5;
-    const rotate = word => word.value % 360;
     // If no sentiment scores in array, display loading animation.
       if (this.state.scores.length === 0) {
           return (
