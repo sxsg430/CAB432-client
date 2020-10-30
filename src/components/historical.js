@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Container, Row, Col, Navbar, NavbarBrand, Nav, NavItem, NavLink} from 'reactstrap';
+import {Container, Row, Col, Navbar, NavbarBrand, Nav, NavItem, NavLink, Spinner} from 'reactstrap';
 import Tweet from './ui_elements/tweet';
 import collect from 'collect.js';
 import { render } from 'react-dom';
@@ -31,7 +31,8 @@ state = {
       if (this.state.tweetbody.length === 0) {
           return (
               <div>
-                  <h1>Loading</h1>
+                  <h2>Loading</h2>
+                  <Spinner color="primary" style={{ width: '3rem', height: '3rem' }}/>
               </div>
           )
       } else {
