@@ -3,7 +3,9 @@ import {Container, Row, Col, Navbar, NavbarBrand, Nav, NavItem, NavLink} from 'r
 import Tweet from './ui_elements/tweet';
 import collect from 'collect.js';
 import { render } from 'react-dom';
+import json from 'json-keys-sort';
 import WordCloud from 'react-d3-cloud';
+import { Bar } from '@reactchartjs/react-chart.js';
 
 export class Historical extends Component {
 state = {
@@ -11,14 +13,13 @@ state = {
     tweetbody: [],
     scores: [],
     totalScore: 0,
+    roundedscore: [],
     sentiment: ""
   };
 
   componentDidMount() {
       // Call our fetch function below once the component mounts
       this.fetchTweets();
-      //this.setState({keys: result});
-      //console.log(this.state.keys);
     
   }
 
@@ -53,6 +54,8 @@ state = {
                     fontSizeMapper={fontSizeMapper}
                     rotate={rotate}
                   />
+                  <h4>Sentiment Graph</h4>
+                  <Bar data={this.state.roundedscore} />
                   </Col>
                   <Col xs="7" sm="7">
                   {this.state.tweets.map((tweet) => (
@@ -93,10 +96,51 @@ state = {
       let localJS = {text: key, value: twFinal[key]};
       finalTWT.push(localJS);
     }
+    var roundedvals = [];
+    tweetSCORE.forEach(async (element) => {
+      roundedvals.push(parseFloat(element).toFixed(2));
+    });
+    const sentColl = collect(roundedvals);
+    const sentDump = sentColl.countBy();
+    const sentFinal = sentDump.all();
+    const sorted = json.sort(sentFinal, false);
+    const sorted2 = json.sort(sentFinal);
+    var barPositive = [];
+    var barNegative = [];
+    var barLabels = [];
+    var barData = [];
+    for (const key in sorted2) {
+      if (parseFloat(key) >= 0) {
+        barPositive.push([key, sentFinal[key]])
+    }
+  }
+    for (const key in sorted) {
+      if (parseFloat(key) < 0) {
+        barNegative.push([key, sentFinal[key]])
+    }
+  }
+  barNegative.forEach(async (element) => {
+    barLabels.push(element[0]);
+    barData.push(element[1])
+  })
+  barPositive.forEach(async (element) => {
+    barLabels.push(element[0]);
+    barData.push(element[1])
+  })
+  const barMeta = {
+    labels: barLabels,
+    datasets: [
+      {
+        label: "Sentiment Scores",
+        data: barData,
+        backgroundColor: '#660000'
+      }
+    ]
+  }
     
     const sentimentSUM = tweetSCORE.reduce((a, b) => a + b, 0);
     const sentimentAVG = (sentimentSUM / tweetSCORE.length) || 0;
 
-    this.setState({tweets: tweetSTORE, tweetbody: finalTWT, scores: tweetSCORE, totalScore: sentimentAVG});
+    this.setState({tweets: tweetSTORE, tweetbody: finalTWT, scores: tweetSCORE, totalScore: sentimentAVG, roundedscore: barMeta});
   }
 }
