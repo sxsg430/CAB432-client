@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Container, Row, Col, Navbar, NavbarBrand, Nav, NavItem, NavLink, Spinner} from 'reactstrap';
+import {Container, Row, Col, Navbar, NavbarBrand, Nav, NavItem, NavLink, Spinner, Alert} from 'reactstrap';
 import Tweet from './ui_elements/tweet';
 import collect from 'collect.js';
 import json from 'json-keys-sort';
@@ -13,7 +13,8 @@ state = {
     scores: [],
     totalScore: 0,
     roundedscore: [],
-    sentiment: ""
+    sentiment: "",
+    loading: true
   };
 
   componentDidMount() {
@@ -26,14 +27,32 @@ state = {
     // Calculate random font size and angle for word map.
     const fontSizeMapper = word => Math.log2(word.value) * 5;
     const rotate = word => word.value % 360;
-    // If no tweets in array, display loading animation.
+    // If page is still loading, show animation.
+    if (this.state.loading) {
+      return (
+        <div>
+          <h2>Loading</h2>
+          <Spinner color="primary" style={{ width: '3rem', height: '3rem' }}/>
+        </div>
+      );
+    } else {
+      // If loading is complete but no tweets returned, show message box advising of no results.
       if (this.state.tweetbody.length === 0) {
-          return (
-              <div>
-                  <h2>Loading</h2>
-                  <Spinner color="primary" style={{ width: '3rem', height: '3rem' }}/>
-              </div>
-          )
+        return (
+          <div className="App">
+            <Navbar color="dark" dark expand="md">
+              <NavbarBrand href="/">Twitter Search</NavbarBrand>
+              <Nav className="mr-auto" navbar>
+                <NavItem>
+                  <NavLink href="/">Search</NavLink>
+                </NavItem>
+              </Nav>
+            </Navbar>
+            <Alert color="warning">
+              No results were found.
+            </Alert>
+          </div>
+        )
       } else {
         // Return main UI elements.
         // Includes Navbar, Average of sentiment values, total tweets grabbed, wordcloud of tweets, bar graph of sentiments
@@ -72,6 +91,7 @@ state = {
             </div>
           );
       }
+    }
     
   }
 
@@ -159,6 +179,6 @@ state = {
     const sentimentAVG = (sentimentSUM / tweetSCORE.length) || 0;
     
     // Push variables to state.
-    this.setState({tweets: tweetSTORE, tweetbody: finalTWT, scores: tweetSCORE, totalScore: sentimentAVG, roundedscore: barMeta});
+    this.setState({tweets: tweetSTORE, tweetbody: finalTWT, scores: tweetSCORE, totalScore: sentimentAVG, roundedscore: barMeta, loading: false});
   }
 }

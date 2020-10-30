@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Container, Row, Col, Navbar, NavbarBrand, Nav, NavItem, NavLink, Spinner} from 'reactstrap';
+import {Container, Row, Col, Navbar, NavbarBrand, Nav, NavItem, NavLink, Spinner, Alert} from 'reactstrap';
 import Tweet from './ui_elements/tweet';
 import collect from 'collect.js';
 import WordCloud from 'react-d3-cloud';
@@ -12,7 +12,8 @@ state = {
     tweetbody: [],
     totalScore: 0,
     roundedscore: [],
-    sentiment: ""
+    sentiment: "",
+    loading: true
   };
 
   componentDidMount() {
@@ -24,8 +25,8 @@ state = {
     // Calculate random font size and angle for word map.
     const fontSizeMapper = word => Math.log2(word.value) * 5;
     const rotate = word => word.value % 360;
-    // If no tweets in array, display loading animation.
-    if (this.state.tweets.length === 0) {
+    // If page is still loading, show animation.
+    if (this.state.loading) {
       return (
         <div>
           <h2>Loading</h2>
@@ -33,6 +34,24 @@ state = {
         </div>
       );
     } else {
+      // If loading is complete but no tweets returned, show message box advising of no results.
+      if (this.state.tweets.length === 0) {
+        return (
+          <div className="App">
+            <Navbar color="dark" dark expand="md">
+              <NavbarBrand href="/">Twitter Search</NavbarBrand>
+              <Nav className="mr-auto" navbar>
+                <NavItem>
+                  <NavLink href="/">Search</NavLink>
+                </NavItem>
+              </Nav>
+            </Navbar>
+            <Alert color="warning">
+              No results were found.
+            </Alert>
+          </div>
+        )
+      } else {
       // Return main UI elements.
       // Includes Navbar, Average of sentiment values, total tweets grabbed, wordcloud of tweets, bar graph of sentiments
       // and the full list of tweets.
@@ -70,6 +89,7 @@ state = {
         </div>
       );
     }
+  }
     
   }
 
@@ -152,6 +172,6 @@ state = {
     ]
   }
   // Push variables to state.
-  this.setState({tweets: respdat.array, totalScore: respdat.totalScore, sentiment: respdat.sentiment, tweetbody: finalTWT, roundedscore: barMeta})
+  this.setState({tweets: respdat.array, totalScore: respdat.totalScore, sentiment: respdat.sentiment, tweetbody: finalTWT, roundedscore: barMeta, loading: false})
   }
 }

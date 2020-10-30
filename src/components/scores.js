@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Container, Row, Col, Navbar, NavbarBrand, Nav, NavItem, NavLink, Spinner} from 'reactstrap';
+import {Container, Row, Col, Navbar, NavbarBrand, Nav, NavItem, NavLink, Spinner, Alert} from 'reactstrap';
 import collect from 'collect.js';
 import json from 'json-keys-sort';
 import { Bar } from '@reactchartjs/react-chart.js';
@@ -10,7 +10,8 @@ state = {
     roundedscore: [],
     totalScore: 0,
     scoreAVG: 0,
-    sentiment: ""
+    sentiment: "",
+    loading: true
   };
 
   componentDidMount() {
@@ -20,14 +21,32 @@ state = {
   }
 
   render() {
-    // If no sentiment scores in array, display loading animation.
+    // If page is still loading, show animation.
+    if (this.state.loading) {
+      return (
+        <div>
+          <h2>Loading</h2>
+          <Spinner color="primary" style={{ width: '3rem', height: '3rem' }}/>
+        </div>
+      );
+    } else {
+      // If loading is complete but no scores returned, show message box advising of no results.
       if (this.state.scores.length === 0) {
-          return (
-              <div>
-                  <h2>Loading</h2>
-                  <Spinner color="primary" style={{ width: '3rem', height: '3rem' }}/>
-              </div>
-          )
+        return (
+          <div className="App">
+            <Navbar color="dark" dark expand="md">
+              <NavbarBrand href="/">Twitter Search</NavbarBrand>
+              <Nav className="mr-auto" navbar>
+                <NavItem>
+                  <NavLink href="/">Search</NavLink>
+                </NavItem>
+              </Nav>
+            </Navbar>
+            <Alert color="warning">
+              No results were found.
+            </Alert>
+          </div>
+        )
       } else {
         // Return main UI elements.
         // Includes Navbar, Average of sentiment values, total tweets grabbed, bar graph of sentiments
@@ -57,6 +76,7 @@ state = {
             </div>
           );
       }
+    }
     
   }
 
@@ -123,6 +143,6 @@ state = {
     var finalAVG = totals / key2.length;
 
     // Push variables to state.
-    this.setState({scores: key2, roundedscore: barMeta, scoreAVG: finalAVG});
+    this.setState({scores: key2, roundedscore: barMeta, scoreAVG: finalAVG, loading: false});
   }
 }
