@@ -72,7 +72,7 @@ state = {
     let baseUrl = getUrl.protocol + "//" + getUrl.host + "/";
     let search = window.location.search;
     let parameters = new URLSearchParams(search);
-    const mkeys = await fetch('http://localhost:3405/historical?query=' + parameters.get('query')); // Hardcoded address
+    const mkeys = await fetch(process.env.REACT_APP_SERVER + '/historical?query=' + parameters.get('query')); // Hardcoded address
     const key2 = await mkeys.json();
     let tweetTXT = [];
     let tweetSTORE = [];

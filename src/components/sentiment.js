@@ -67,7 +67,7 @@ state = {
     let search = window.location.search;
     let parameters = new URLSearchParams(search);
     let tweetTXT = [];
-    const resp = await fetch('http://localhost:3405/twitter?query=' + parameters.get('query') + '&count=' + parameters.get('count')); // Hardcoded address
+    const resp = await fetch(process.env.REACT_APP_SERVER + '/twitter?query=' + parameters.get('query') + '&count=' + parameters.get('count')); // Hardcoded address
     const respdat = await resp.json();
     const resarr = await respdat.array;
     resarr.forEach(element => {
