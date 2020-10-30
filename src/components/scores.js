@@ -43,14 +43,15 @@ state = {
                       </Navbar>
               <Container fluid>
                 <Row>
-                  <Col xs="5" sm="5">
-                  <h2> Average Score: { this.state.scoreAVG}</h2>
-                  <h3> Total Tweets Fetched: { this.state.scores.length}</h3>
-                  <h4>Sentiment Graph</h4>
-                  <Bar data={this.state.roundedscore} />
+                  <Col xs="3" sm="3" />
+                  <Col xs="6" sm="6">
+                    <br />
+                    <h2> Average Score: { this.state.scoreAVG}</h2>
+                    <h3> Total Tweets Fetched: { this.state.scores.length}</h3>
+                    <h4>Sentiment Graph</h4>
+                    <Bar data={this.state.roundedscore} />
                   </Col>
-                  <Col xs="7" sm="7">
-                  </Col>
+                  <Col xs="5" sm="5" />
                 </Row>
               </Container>
             </div>
