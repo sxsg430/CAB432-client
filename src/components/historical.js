@@ -2,14 +2,15 @@ import React, { Component } from 'react';
 import {Container, Row, Col, Navbar, NavbarBrand, Nav, NavItem, NavLink, Spinner, Alert} from 'reactstrap';
 import Tweet from './ui_elements/tweet';
 import collect from 'collect.js';
-import WordCloud from 'react-d3-cloud';
 import json from 'json-keys-sort';
+import WordCloud from 'react-d3-cloud';
 import { Bar } from '@reactchartjs/react-chart.js';
 
-export class Sentiment extends Component {
+export class Historical extends Component {
 state = {
     tweets: [],
     tweetbody: [],
+    scores: [],
     totalScore: 0,
     roundedscore: [],
     sentiment: "",
@@ -17,8 +18,9 @@ state = {
   };
 
   componentDidMount() {
-    // Run the function to get tweets.
-    this.getTweet();
+      // Run the function to get tweets.
+      this.fetchTweets();
+    
   }
 
   render() {
@@ -35,7 +37,7 @@ state = {
       );
     } else {
       // If loading is complete but no tweets returned, show message box advising of no results.
-      if (this.state.tweets.length === 0) {
+      if (this.state.tweetbody.length === 0) {
         return (
           <div className="App">
             <Navbar color="dark" dark expand="md">
@@ -52,66 +54,67 @@ state = {
           </div>
         )
       } else {
-      // Return main UI elements.
-      // Includes Navbar, Average of sentiment values, total tweets grabbed, wordcloud of tweets, bar graph of sentiments
-      // and the full list of tweets.
-      return (
-        <div className="App">
-          <Navbar color="dark" dark expand="md">
-                      <NavbarBrand href="/">Twitter Search</NavbarBrand>
-                      <Nav className="mr-auto" navbar>
-                          <NavItem>
-                              <NavLink href="/">Search</NavLink>
-                          </NavItem>
-                      </Nav>
-                  </Navbar>
-          <Container fluid>
-            <Row>
-              <Col xs="5" sm="5">
-                <h2> Average Score: { this.state.totalScore}</h2>
-                <h3> Total Tweets Fetched: { this.state.tweets.length}</h3>
-                <h4>Word Cloud</h4>
-                <WordCloud
-                  data={this.state.tweetbody}
-                  fontSizeMapper={fontSizeMapper}
-                  rotate={rotate}
-                />
-                <h4>Sentiment Graph</h4>
+        // Return main UI elements.
+        // Includes Navbar, Average of sentiment values, total tweets grabbed, wordcloud of tweets, bar graph of sentiments
+        // and the full list of tweets.
+        return (
+            <div className="App">
+              <Navbar color="dark" dark expand="md">
+                          <NavbarBrand href="/">Twitter Search</NavbarBrand>
+                          <Nav className="mr-auto" navbar>
+                              <NavItem>
+                                  <NavLink href="/">Search</NavLink>
+                              </NavItem>
+                          </Nav>
+                      </Navbar>
+              <Container fluid>
+                <Row>
+                  <Col xs="5" sm="5">
+                  <h2> Average Score: { this.state.totalScore}</h2>
+                  <h3> Total Tweets Fetched: { this.state.tweets.length}</h3>
+                  <h4>Word Cloud</h4>
+                 <WordCloud
+                    data={this.state.tweetbody}
+                    fontSizeMapper={fontSizeMapper}
+                    rotate={rotate}
+                  />
+                  <h4>Sentiment Graph</h4>
                   <Bar data={this.state.roundedscore} />
-              </Col>
-              <Col xs="7" sm="7">
-                {this.state.tweets.map((tweet) => (
-                  <Tweet tweet={tweet} />
-                ))}
-              </Col>
-            </Row>
-          </Container>
-        </div>
-      );
+                  </Col>
+                  <Col xs="7" sm="7">
+                  {this.state.tweets.map((tweet) => (
+                      <Tweet tweet={tweet} />
+                    ))}
+                  </Col>
+                </Row>
+              </Container>
+            </div>
+          );
+      }
     }
-  }
     
   }
 
-  async getTweet() {
+  async fetchTweets() {
     let search = window.location.search;
     let parameters = new URLSearchParams(search); // Get params from the URL for later.
-    let tweetTXT = [];
-    let tweetSCORE = [];
     // Send request to the backend API for new tweets and save to variable.
-    const resp = await fetch(process.env.REACT_APP_SERVER + '/twitter?query=' + parameters.get('query'));
-    // Convert result to JSON and get tweet array from the body.
-    const respdat = await resp.json();
-    const resarr = await respdat.array;
-    resarr.forEach(element => {
-      // For each returned tweet, push their sentiment score to an array.
-      tweetSCORE.push(element.score);
+    const mkeys = await fetch(process.env.REACT_APP_SERVER + '/historical?query=' + parameters.get('query'));
+    // Convert result to JSON for use.
+    const key2 = await mkeys.json();
+    let tweetTXT = [];
+    let tweetSTORE = [];
+    let tweetSCORE = [];
+    key2.forEach(async (element) => {
+      // For each returned tweet, push full tweet and the sentiment score into arrays.
+      tweetSTORE.push(JSON.parse(element));
+      tweetSCORE.push(JSON.parse(element).score);
       // Split each tweet by space and push each word into an array.
-      var splStr = element.text.split(' ');
-      splStr.forEach(element2 => {
+      const twString = JSON.parse(element).text.split(" ");
+      twString.forEach(element2 => {
         tweetTXT.push(element2);
       })
-    });
+    })
     const twColl = collect(tweetTXT); // Create a Collect object using the tweets.
     const twDup = twColl.countBy(); // Get frequency of words in the array, format: {word, frequency}
     let finalTWT = [];
@@ -171,7 +174,11 @@ state = {
       }
     ]
   }
-  // Push variables to state.
-  this.setState({tweets: respdat.array, totalScore: respdat.totalScore, sentiment: respdat.sentiment, tweetbody: finalTWT, roundedscore: barMeta, loading: false})
+    // Generate average of sentiment data
+    const sentimentSUM = tweetSCORE.reduce((a, b) => a + b, 0);
+    const sentimentAVG = (sentimentSUM / tweetSCORE.length) || 0;
+    
+    // Push variables to state.
+    this.setState({tweets: tweetSTORE, tweetbody: finalTWT, scores: tweetSCORE, totalScore: sentimentAVG, roundedscore: barMeta, loading: false});
   }
 }
