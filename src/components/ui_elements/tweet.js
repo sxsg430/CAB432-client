@@ -12,6 +12,8 @@ export class Tweet extends Component {
     }
 
     render() {
+        // Basic Reactstrap card to hold tweet data. Takes in a tweet JSON object from the props and converts it into a card for display.
+        // Uses the Tweet's post date, sentiment score and text body.
         return (
             <div>
                 <Card>

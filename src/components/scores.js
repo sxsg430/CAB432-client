@@ -17,7 +17,7 @@ state = {
   };
 
   componentDidMount() {
-      // Call our fetch function below once the component mounts
+      // Run the function to get tweets.
       this.fetchTweets();
     
   }
@@ -25,6 +25,7 @@ state = {
   render() {
     const fontSizeMapper = word => Math.log2(word.value) * 5;
     const rotate = word => word.value % 360;
+    // If no sentiment scores in array, display loading animation.
       if (this.state.scores.length === 0) {
           return (
               <div>
@@ -32,6 +33,8 @@ state = {
               </div>
           )
       } else {
+        // Return main UI elements.
+        // Includes Navbar, Average of sentiment values, total tweets grabbed, bar graph of sentiments
         return (
             <div className="App">
               <Navbar color="dark" dark expand="md">
@@ -60,36 +63,44 @@ state = {
     
   }
 
-  async fetchTweets() {
-    let getUrl = window.location;
-    let baseUrl = getUrl.protocol + "//" + getUrl.host + "/";
+  async fetchTweets() {;
     let search = window.location.search;
-    let parameters = new URLSearchParams(search);
-    const mkeys = await fetch(process.env.REACT_APP_SERVER + '/scores?query=' + parameters.get('query')); // Hardcoded address
+    let parameters = new URLSearchParams(search);  // Get params from the URL for later.
+    // Send request to the backend API for new tweets and save to variable.
+    const mkeys = await fetch(process.env.REACT_APP_SERVER + '/scores?query=' + parameters.get('query'));
+    // Convert result to JSON for later use.
     const key2 = await mkeys.json();
     var roundedvals = [];
     key2.forEach(async (element) => {
+      // For each sentiment score, convert the string to float and round to two places.
       roundedvals.push(parseFloat(element).toFixed(2));
     })
     const twColl = collect(roundedvals);
-    const twDup = twColl.countBy();
+    const twDup = twColl.countBy(); // Get frequency of sentiment values.
     const twFinal = twDup.all();
-    const sorted = json.sort(twFinal, false);
-    const sorted2 = json.sort(twFinal);
-    var barPositive = [];
+    const sorted = json.sort(twFinal, false); // Perform two JSON sorts on the final array
+    const sorted2 = json.sort(twFinal);       // One in acending and another decending
+    var barPositive = []; // Variables for holding temp data for bar graph.
     var barNegative = [];
     var barLabels = [];
     var barData = [];
+
+    // Two for loops required to put items in proper order.
+    // This keeps data in the format (-0.5 ... 0 .. 0.5), instead of (-0.1 ... -0.5, 0 .. 0.5)
     for (const key in sorted2) {
+      // For the ascending array, if the value is higher or equal to 0, push to the positive array.
       if (parseFloat(key) >= 0) {
         barPositive.push([key, twFinal[key]])
     }
   }
     for (const key in sorted) {
+      // For the descending array, if the value is less, push to the negative array.
       if (parseFloat(key) < 0) {
         barNegative.push([key, twFinal[key]])
     }
   }
+
+    // Get the data and frequency from both positive and negative arrays and push them to the bar graph arrays in order.
     barNegative.forEach(async (element) => {
       barLabels.push(element[0]);
       barData.push(element[1])
@@ -98,6 +109,8 @@ state = {
       barLabels.push(element[0]);
       barData.push(element[1])
     })
+
+    // Construct JSON object for the bar graph, including labels and colours.
     const barMeta = {
       labels: barLabels,
       datasets: [
@@ -109,7 +122,7 @@ state = {
       ]
     }
 
-
+    // Push variables to state.
     this.setState({scores: key2, roundedscore: barMeta});
   }
 }
