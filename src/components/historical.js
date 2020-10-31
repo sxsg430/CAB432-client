@@ -14,7 +14,8 @@ state = {
     totalScore: 0,
     roundedscore: [],
     sentiment: "",
-    loading: true
+    loading: true,
+    status: "000"
   };
 
   componentDidMount() {
@@ -36,8 +37,26 @@ state = {
         </div>
       );
     } else {
+      // If a code other than 200 is returned, assume an error occured and show result.
+      if (this.state.status !== 200) {
+        return (
+          <div className="App">
+            <Navbar color="dark" dark expand="md">
+              <NavbarBrand href="/">Twitter Search</NavbarBrand>
+              <Nav className="mr-auto" navbar>
+                <NavItem>
+                  <NavLink href="/">Search</NavLink>
+                </NavItem>
+              </Nav>
+            </Navbar>
+            <Alert color="warning">
+              An error has occured. Either no results were returned, or the server returned an eror.
+            </Alert>
+          </div>
+        )
+      }
       // If loading is complete but no tweets returned, show message box advising of no results.
-      if (this.state.tweetbody.length === 0) {
+      else if (this.state.tweetbody.length === 0) {
         return (
           <div className="App">
             <Navbar color="dark" dark expand="md">
@@ -179,6 +198,6 @@ state = {
     const sentimentAVG = (sentimentSUM / tweetSCORE.length) || 0;
     
     // Push variables to state.
-    this.setState({tweets: tweetSTORE, tweetbody: finalTWT, scores: tweetSCORE, totalScore: sentimentAVG, roundedscore: barMeta, loading: false});
+    this.setState({tweets: tweetSTORE, tweetbody: finalTWT, scores: tweetSCORE, totalScore: sentimentAVG, roundedscore: barMeta, loading: false, status: mkeys.status});
   }
 }
