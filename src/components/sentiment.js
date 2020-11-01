@@ -119,6 +119,10 @@ state = {
     let tweetSCORE = [];
     // Send request to the backend API for new tweets and save to variable.
     const resp = await fetch(process.env.REACT_APP_SERVER + '/twitter?query=' + parameters.get('query'));
+    if (resp.status !== 200) {
+      // Early check for non-200 error codes and force the function to end early. Fixes issues when the server returns a CORS error or doesn't return results.
+      this.setState({loading: false, status: resp.status});
+    }
     // Convert result to JSON and get tweet array from the body.
     const respdat = await resp.json();
     const resarr = await respdat.array;

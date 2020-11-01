@@ -104,6 +104,10 @@ state = {
     let parameters = new URLSearchParams(search);  // Get params from the URL for later.
     // Send request to the backend API for new tweets and save to variable.
     const mkeys = await fetch(process.env.REACT_APP_SERVER + '/scores?query=' + parameters.get('query'));
+    if (mkeys.status !== 200) {
+      // Early check for non-200 error codes and force the function to end early. Fixes issues when the server returns a CORS error or doesn't return results.
+      this.setState({loading: false, status: mkeys.status});
+    }
     // Convert result to JSON for later use.
     const key2 = await mkeys.json();
     var roundedvals = [];
